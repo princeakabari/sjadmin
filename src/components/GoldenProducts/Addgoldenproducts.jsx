@@ -1,22 +1,102 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { careerHndlerData } from "../../service/auth.service";
-import { listBody } from "../../utils/helper";
+import {
+  addproductsHandler,
+  goldenHndlerData,
+  sliverHndlerData,
+} from "../../service/auth.service";
+import { listBody, validName } from "../../utils/helper";
+import toast from "react-hot-toast";
 import Navbar from "../Navbar";
 
-export default function Career() {
+export default function Addgoldenproducts() {
   const navigate = useNavigate();
-
+  const [cid, setCid] = useState("");
+  const [cidErr, setCidErr] = useState("");
+  const [goldenproductName, setProductsName] = useState("");
+  const [goldenproductNameErr, setProductsNameErr] = useState(false);
+  const [goldenproductImg, setProductsImg] = useState("");
+  const [goldenproductDescription, setProductDescription] = useState("");
+  const [goldenproductDescriptionErr, setProductDescriptionErr] =
+    useState(false);
+  const [goldenproductImgErr, setProductsImgErr] = useState(false);
+  const [selected, setSelected] = useState(false);
   const [categoriesData, setcategoriesData] = useState([]);
+  const [file, setFile] = useState();
+
   useEffect(() => {
-    getcareerData();
+    getgoldenData();
   }, []);
-  const getcareerData = async () => {
-    const response = await careerHndlerData(listBody({ perPage: 1000 }));
+
+  const getgoldenData = async () => {
+    const response = await goldenHndlerData(listBody({ perPage: 1000 }));
     if (response) {
       setcategoriesData(response);
     }
   };
+  const successnotify = (msg) =>
+    toast.success(msg, { duration: 4000, id: msg });
+  const errornotify = (msg) => toast.error(msg, { duration: 4000, id: msg });
+  const validation = () => {
+    let formIsValid = true;
+    if (!goldenproductName) {
+      formIsValid = false;
+      setProductsNameErr("Your Product name is required");
+    }
+    if (!goldenproductImg) {
+      formIsValid = false;
+      setProductsImgErr("Your Product image is required");
+    }
+    if (!goldenproductDescription) {
+      formIsValid = false;
+      setProductDescriptionErr("Your Product description is required");
+    }
+    if (!validName.test(goldenproductName)) {
+      formIsValid = false;
+      setProductsNameErr("Your Product name is invalid");
+    }
+    if (!validName.test(goldenproductDescription)) {
+      formIsValid = false;
+      setProductDescriptionErr("Your Product description is invalid");
+    }
+    if (!cid) {
+      formIsValid = false;
+      setCidErr("Your Product Sliver is invalid");
+    }
+
+    return formIsValid;
+  };
+  const handleSubmit = (e) => {
+    if (validation() !== true) {
+    } else {
+      postData(e);
+      setSelected(true);
+    }
+    e.preventDefault();
+  };
+  const postData = async (event) => {
+    event.preventDefault();
+    let reqBody;
+    reqBody = new FormData();
+    reqBody.append("goldenproductName", goldenproductName);
+    reqBody.append("goldenproductImg", goldenproductImg);
+    reqBody.append("goldenproductDescription", goldenproductDescription);
+    reqBody.append("categoryId", cid);
+    const response = await addproductsHandler(reqBody);
+    if (response.success) {
+      setSelected(false);
+      navigate("/goldenproducts");
+      successnotify(response.message);
+      setSelected(false);
+    } else {
+      errornotify(response.message);
+      setSelected(false);
+    }
+  };
+  function handleChange(e) {
+    setFile(URL.createObjectURL(e.target.files[0]));
+    setProductsImg(e.target.files[0]);
+  }
   return (
     <div>
       <div className="layout-wrapper layout-content-navbar  ">
@@ -54,7 +134,7 @@ export default function Career() {
                   <div data-i18n="Analytics">Dashboard</div>
                 </Link>
               </li>
-              <li className="menu-item">
+              <li className="menu-item ">
                 <Link to="/golden" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-category" />
                   <div data-i18n="Analytics">Golden Collection</div>
@@ -67,7 +147,7 @@ export default function Career() {
                 </Link>
               </li>
 
-              <li className="menu-item ">
+              <li className="menu-item active">
                 <Link to="/goldenproducts" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-category-alt" />
                   <div data-i18n="Analytics">Golden Products</div>
@@ -79,13 +159,13 @@ export default function Career() {
                   <div data-i18n="Analytics">Sliver Products</div>
                 </Link>
               </li>
-              <li className="menu-item  ">
+              <li className="menu-item ">
                 <Link to="/banner" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-windows" />
                   <div data-i18n="Analytics">Web Banner</div>
                 </Link>
               </li>
-              <li className="menu-item active ">
+              <li className="menu-item ">
                 <Link to="/career" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-medal" />
                   <div data-i18n="Analytics">Career </div>
@@ -97,7 +177,6 @@ export default function Career() {
                   <div data-i18n="Analytics">Contact</div>
                 </Link>
               </li>
-             
             </ul>
           </aside>
           {/* / Menu */}
@@ -123,98 +202,156 @@ export default function Career() {
                     classname="topName"
                     style={{ fontSize: "x-large", fontWeight: "600" }}
                   >
-                    Career
+                    Add Golden Products
                   </span>
-
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    onClick={() => navigate("/career/add")}
-                  >
-                    Add Career
-                  </button>
                 </div>
+                <div className="row">
+                  <div className="col-xl">
+                    <div className="card mb-4">
+                      <div className="card-header d-flex justify-content-between align-items-center">
+                        <h5 className="mb-0">Add New Products</h5>
+                        <small className="text-muted float-end">
+                          Add Golden Products Infomation
+                        </small>
+                      </div>
+                      <div className="card-body">
+                        <form
+                          onSubmit={(e) => {
+                            handleSubmit(e);
+                          }}
+                          method="post"
+                        >
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              Golden Products Name
+                            </label>
+                            <input
+                              type="text"
+                              id="goldenproductName"
+                              name="goldenproductName"
+                              className="form-control"
+                              placeholder="Enter Products Name"
+                              onChange={(e) => [
+                                setProductsName(e.target.value),
+                                setProductsNameErr(" "),
+                              ]}
+                            />
+                          </div>
+                          {goldenproductNameErr && (
+                            <p className="errorstyle">{goldenproductNameErr}</p>
+                          )}
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              Golden Products Description
+                            </label>
+                            <input
+                              type="text"
+                              id="goldenproductDescription"
+                              name="goldenproductDescription"
+                              className="form-control"
+                              placeholder="Enter Products Description"
+                              onChange={(e) => [
+                                setProductDescription(e.target.value),
+                                setProductDescriptionErr(" "),
+                              ]}
+                            />
+                          </div>
 
-                {categoriesData.length > 0 ? (
-                  <div className="card">
-                    <h5 className="card-header">Career List</h5>
-                    <div className="table-responsive text-nowrap">
-                      <table className="table table-hover">
-                        <thead>
-                          <tr>
-                            <th>No</th>
-                            <th>Post</th>
-                            <th>Job Location</th>
-                            <th>Department</th>
-                            <th>Gender</th>
-                            <th>Experience</th>
-                            <th>Training</th>
-                            <th>Salary</th>
-                            <th>otherBenefits</th>
-                            <th>Status</th>
-                            <th>Edit</th>
-                          </tr>
-                        </thead>
-                        <tbody className="table-border-bottom-0">
-                          {categoriesData?.map((card, index) => {
-                            return (
-                              <tr>
-                                <td>
-                                  <strong>{index + 1}</strong>
-                                </td>
-                                <td>{card.post}</td>
-                                <td>{card.jobLocation}</td>
-                                <td>{card.department}</td>
-                                <td>{card.gender}</td>
-                                <td>{card.experience}</td>
-                                <td>{card.training}</td>
-                                <td>{card.salary}</td>
-                                <td>{card.otherBenefits}</td>
+                          {goldenproductDescriptionErr && (
+                            <p className="errorstyle">
+                              {goldenproductDescriptionErr}
+                            </p>
+                          )}
 
-                                <td>
-                                  {card.isActive === "true" ? (
-                                    <span className="badge bg-label-primary me-1">
-                                      Active
-                                    </span>
-                                  ) : (
-                                    <span className="badge bg-label-danger me-1">
-                                      Disable
-                                    </span>
-                                  )}
-                                </td>
-                                <td>
-                                  <Link to={`/career/edit?cid=${card._id}`}>
-                                    <i
-                                      className="bx bx-edit-alt "
-                                      style={{
-                                        fontSize: "20px",
-                                        cursor: "pointer",
-                                      }}
-                                    />
-                                  </Link>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+                          <div class="mb-3">
+                            <label for="defaultSelect" class="form-label">
+                              Golden Category
+                            </label>
+                            <select
+                              id="defaultSelect"
+                              class="form-select"
+                              onChange={(e) => [
+                                setCid(e.target.value),
+                                setCidErr(" "),
+                              ]}
+                            >
+                              <option>Select Product Sliver</option>
+                              {categoriesData?.map((card) => {
+                                return (
+                                  <option value={card._id}>
+                                    {card.goldenName}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                          {cidErr && <p className="errorstyle">{cidErr}</p>}
+
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-company"
+                            >
+                              Golden Products Image
+                            </label>
+                            <input
+                              type="file"
+                              id="goldenproductImg"
+                              name="goldenproductImg"
+                              className="form-control"
+                              placeholder="Add Products Iamge"
+                              onChange={(e) => [
+                                handleChange(e),
+                                ,
+                                setProductsImgErr(" "),
+                              ]}
+                            />
+                          </div>
+                          {goldenproductImgErr && (
+                            <p className="errorstyle">{goldenproductImgErr}</p>
+                          )}
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-company"
+                            >
+                              Golden Products Image
+                            </label>
+                            <br />
+                            <img
+                              src={file}
+                              alt=""
+                              style={{ width: "15%", borderRadius: "6px" }}
+                            />
+                          </div>
+
+                          <button type="submit" className="btn btn-primary">
+                            {selected ? "Loading..." : "Add Products "}
+                          </button>
+                          <button
+                            type="submit"
+                            className="btn btn-primary"
+                            style={{
+                              marginLeft: "12px",
+                            }}
+                            onClick={() => navigate("/goldenproducts")}
+                          >
+                            Back
+                          </button>
+                        </form>
+                      </div>
                     </div>
                   </div>
-                ) : (
-                  <div
-                    class="spinner-border spinner-border-lg text-primary"
-                    role="status"
-                    style={{
-                      marginLeft: "45%",
-                      marginRight: "45%",
-                      marginTop: "20%",
-                    }}
-                  >
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                )}
+                </div>
               </div>
               {/* / Content */}
+
               {/* Footer */}
               <footer className="content-footer footer bg-footer-theme">
                 <div className="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">

@@ -1,13 +1,28 @@
-// eslint-disable-next-line
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // eslint-disable-next-line
 export const validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // eslint-disable-next-line
-export const validName = /^[A-Za-z]+$/;
+export const validName = /^[a-zA-Z0-9_ ]*$/;
 export const validPhoneno = /^[0-9]{6,10}$/;
 export const validPaasword =
   /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
 export const ENDPOINTURL = "https://sjbackend.up.railway.app/api/v1";
 // export const ENDPOINTURL = "http://localhost:8080/api/v1";
-export const URL = "https://sjbackend.up.railway.app/";
-// export const URL = "https://fea-backend.herokuapp.com/";
+// export const IMGURL = "http://localhost:8080/";
+export const IMGURL = "https://sjbackend.up.railway.app/";
+
+export const EventEmitter = {
+  events: {},
+
+  dispatch: function (event, data) {
+    if (!this.events[event]) return;
+    this.events[event].forEach((callback) => callback(data));
+  },
+
+  subscribe: function (event, callback) {
+    if (!this.events[event]) this.events[event] = [];
+    this.events[event].push(callback);
+  },
+};
 
 export const listBody = (data) => {
   return {
@@ -19,6 +34,18 @@ export const listBody = (data) => {
       page: data?.page ? data.page : 1,
     },
   };
+};
+
+export const suceessUser = (Message) => {
+  toast.success(Message, {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: true,
+    progress: undefined,
+  });
 };
 
 export const delBody = (data) => {

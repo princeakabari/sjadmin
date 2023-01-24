@@ -1,22 +1,115 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { careerHndlerData } from "../../service/auth.service";
-import { listBody } from "../../utils/helper";
+import {
+  editgoldenHandler,
+  editWithoutImg,
+  getgoldenHandler,
+} from "../../service/auth.service";
+import { IMGURL, validName } from "../../utils/helper";
+import toast from "react-hot-toast";
 import Navbar from "../Navbar";
+import { useLocation } from "react-router-dom";
 
-export default function Career() {
+export default function Editgolden() {
   const navigate = useNavigate();
-
-  const [categoriesData, setcategoriesData] = useState([]);
+  const [cid, setGoldenId] = useState(" ");
+  const [goldenName, setGoldenName] = useState();
+  const [goldenNameErr, setGoldenNameErr] = useState(false);
+  const [goldenImg, setGoldenImg] = useState();
+  const [goldenImgErr, setGoldenImgErr] = useState(false);
+  const [selected, setSelected] = useState(false);
+  const [isActive, setIsActive] = useState(true);
+  const location = useLocation();
+  const [file, setFile] = useState();
+  console.log(file);
+  const { search } = location;
   useEffect(() => {
-    getcareerData();
-  }, []);
-  const getcareerData = async () => {
-    const response = await careerHndlerData(listBody({ perPage: 1000 }));
+    let userId;
+    if (search.split("=").length > 0) {
+      userId = search.split("=")[1];
+    } else {
+      userId = "";
+    }
+    setGoldenId(userId);
+    getgoldenData(userId);
+  }, [search]);
+
+  const getgoldenData = async (userId) => {
+    const response = await getgoldenHandler(userId);
     if (response) {
-      setcategoriesData(response);
+      setGoldenName(response.goldenName);
+      setGoldenImg(response.goldenImg);
     }
   };
+
+  const successnotify = (msg) =>
+    toast.success(msg, { duration: 4000, id: msg });
+  const errornotify = (msg) => toast.error(msg, { duration: 4000, id: msg });
+  const validation = () => {
+    let formIsValid = true;
+    if (!goldenName) {
+      formIsValid = false;
+      setGoldenNameErr("Your Golden name is required");
+    }
+    if (!goldenImg) {
+      formIsValid = false;
+      setGoldenImgErr("Your Golden image is required");
+    }
+    if (!validName.test(goldenName)) {
+      formIsValid = false;
+      setGoldenNameErr("Your Golden name is invalid");
+    }
+
+    return formIsValid;
+  };
+  const handleSubmit = (e) => {
+    if (validation() !== true) {
+    } else {
+      postData(e);
+      setSelected(true);
+    }
+    e.preventDefault();
+  };
+  const postData = async (event) => {
+    event.preventDefault();
+    if (file) {
+      console.log("ok");
+      let reqBody;
+      reqBody = new FormData();
+      reqBody.append("goldenName", goldenName);
+      reqBody.append("goldenImg", goldenImg);
+      reqBody.append("isActive", isActive);
+      const response = await editgoldenHandler(cid, reqBody);
+      if (response.success) {
+        setSelected(false);
+        navigate("/golden");
+        successnotify(response.message);
+        setSelected(false);
+      } else {
+        errornotify(response.message);
+        setSelected(false);
+      }
+    } else {
+      let reqBody = {
+        goldenName,
+        isActive,
+      };
+      const response = await editWithoutImg(cid, reqBody);
+      if (response.success) {
+        setSelected(false);
+        navigate("/golden");
+        successnotify(response.message);
+        setSelected(false);
+      } else {
+        errornotify(response.message);
+        setSelected(false);
+      }
+    }
+  };
+  function handleChange(e) {
+    setFile(URL.createObjectURL(e.target.files[0]));
+    setGoldenImg(e.target.files[0]);
+  }
   return (
     <div>
       <div className="layout-wrapper layout-content-navbar  ">
@@ -38,10 +131,7 @@ export default function Career() {
                 </span>
                 <span className="app-brand-text demo menu-text fw-bolder ms-2"></span>
               </Link>
-              <a
-                
-                className="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none"
-              >
+              <a className="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
                 <i className="bx bx-chevron-left bx-sm align-middle" />
               </a>
             </div>
@@ -54,7 +144,7 @@ export default function Career() {
                   <div data-i18n="Analytics">Dashboard</div>
                 </Link>
               </li>
-              <li className="menu-item">
+              <li className="menu-item active">
                 <Link to="/golden" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-category" />
                   <div data-i18n="Analytics">Golden Collection</div>
@@ -79,13 +169,13 @@ export default function Career() {
                   <div data-i18n="Analytics">Sliver Products</div>
                 </Link>
               </li>
-              <li className="menu-item  ">
+              <li className="menu-item ">
                 <Link to="/banner" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-windows" />
                   <div data-i18n="Analytics">Web Banner</div>
                 </Link>
               </li>
-              <li className="menu-item active ">
+              <li className="menu-item ">
                 <Link to="/career" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-medal" />
                   <div data-i18n="Analytics">Career </div>
@@ -97,7 +187,6 @@ export default function Career() {
                   <div data-i18n="Analytics">Contact</div>
                 </Link>
               </li>
-             
             </ul>
           </aside>
           {/* / Menu */}
@@ -123,98 +212,133 @@ export default function Career() {
                     classname="topName"
                     style={{ fontSize: "x-large", fontWeight: "600" }}
                   >
-                    Career
+                    Edit Golden
                   </span>
-
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    onClick={() => navigate("/career/add")}
-                  >
-                    Add Career
-                  </button>
                 </div>
+                <div className="row">
+                  <div className="col-xl">
+                    <div className="card mb-4">
+                      <div className="card-header d-flex justify-content-between align-items-center">
+                        <h5 className="mb-0">Edit Golden</h5>
+                        <small className="text-muted float-end">
+                          Edit Golden Infomation
+                        </small>
+                      </div>
+                      <div className="card-body">
+                        <form
+                          onSubmit={(e) => {
+                            handleSubmit(e);
+                          }}
+                          method="post"
+                        >
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              Golden Name
+                            </label>
+                            <input
+                              type="text"
+                              id="goldenName"
+                              name="goldenName"
+                              className="form-control"
+                              placeholder="Enter Golden Name"
+                              onChange={(e) => [
+                                setGoldenName(e.target.value),
+                                setGoldenNameErr(" "),
+                              ]}
+                              value={goldenName}
+                            />
+                          </div>
+                          {goldenNameErr && (
+                            <p className="errorstyle">{goldenNameErr}</p>
+                          )}
 
-                {categoriesData.length > 0 ? (
-                  <div className="card">
-                    <h5 className="card-header">Career List</h5>
-                    <div className="table-responsive text-nowrap">
-                      <table className="table table-hover">
-                        <thead>
-                          <tr>
-                            <th>No</th>
-                            <th>Post</th>
-                            <th>Job Location</th>
-                            <th>Department</th>
-                            <th>Gender</th>
-                            <th>Experience</th>
-                            <th>Training</th>
-                            <th>Salary</th>
-                            <th>otherBenefits</th>
-                            <th>Status</th>
-                            <th>Edit</th>
-                          </tr>
-                        </thead>
-                        <tbody className="table-border-bottom-0">
-                          {categoriesData?.map((card, index) => {
-                            return (
-                              <tr>
-                                <td>
-                                  <strong>{index + 1}</strong>
-                                </td>
-                                <td>{card.post}</td>
-                                <td>{card.jobLocation}</td>
-                                <td>{card.department}</td>
-                                <td>{card.gender}</td>
-                                <td>{card.experience}</td>
-                                <td>{card.training}</td>
-                                <td>{card.salary}</td>
-                                <td>{card.otherBenefits}</td>
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-company"
+                            >
+                              Upload Golden Image
+                            </label>
+                            <input
+                              type="file"
+                              id="goldenImg"
+                              name="goldenImg"
+                              className="form-control"
+                              placeholder="Add Golden Iamge"
+                              onChange={(e) => [
+                                handleChange(e),
+                                setGoldenImgErr(" "),
+                              ]}
+                            />
+                          </div>
+                          {goldenImgErr && (
+                            <p className="errorstyle">{goldenImgErr}</p>
+                          )}
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-company"
+                            >
+                              Golden Status
+                            </label>
+                            <div className="form-check form-switch mb-2">
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id="flexSwitchCheckChecked"
+                                defaultChecked={isActive}
+                                onChange={(e) => [setIsActive(!isActive)]}
+                              />
+                            </div>
+                          </div>
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-company"
+                            >
+                              Golden Image
+                            </label>
+                            <br />
 
-                                <td>
-                                  {card.isActive === "true" ? (
-                                    <span className="badge bg-label-primary me-1">
-                                      Active
-                                    </span>
-                                  ) : (
-                                    <span className="badge bg-label-danger me-1">
-                                      Disable
-                                    </span>
-                                  )}
-                                </td>
-                                <td>
-                                  <Link to={`/career/edit?cid=${card._id}`}>
-                                    <i
-                                      className="bx bx-edit-alt "
-                                      style={{
-                                        fontSize: "20px",
-                                        cursor: "pointer",
-                                      }}
-                                    />
-                                  </Link>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+                            {file && goldenImg ? (
+                              <img
+                                src={file}
+                                alt=""
+                                style={{ width: "15%", borderRadius: "6px" }}
+                              />
+                            ) : (
+                              <img
+                                src={IMGURL + goldenImg}
+                                alt=""
+                                style={{ width: "15%", borderRadius: "6px" }}
+                              />
+                            )}
+                          </div>
+
+                          <button type="submit" className="btn btn-primary">
+                            {selected ? "Loading..." : "Edit Golden "}
+                          </button>
+                          <button
+                            type="submit"
+                            className="btn btn-primary"
+                            style={{
+                              marginLeft: "12px",
+                            }}
+                            onClick={() => navigate("/golden")}
+                          >
+                            Back
+                          </button>
+                        </form>
+                      </div>
                     </div>
                   </div>
-                ) : (
-                  <div
-                    class="spinner-border spinner-border-lg text-primary"
-                    role="status"
-                    style={{
-                      marginLeft: "45%",
-                      marginRight: "45%",
-                      marginTop: "20%",
-                    }}
-                  >
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                )}
+                </div>
               </div>
               {/* / Content */}
+
               {/* Footer */}
               <footer className="content-footer footer bg-footer-theme">
                 <div className="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">

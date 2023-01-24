@@ -1,44 +1,26 @@
-.header {
-  background: white;
-  position: fixed;
-  width: 100%;
-  z-index: 99;
-  box-shadow: rgba(17, 12, 46, 0.1) 0px 48px 100px 0px;
+.errorstyle{
+    background: #fad4d4;
+    font-size: small;
+    color: #a92c2c;
+    border-radius: 6px;
+    text-align: center;
 }
-.main-wrapper {
-  padding-top: 98px;
+body{
+    color: black ;
 }
-.mainmenu li a {
-  font-size: 20px;
+.logout{
+    cursor: pointer;
 }
-
-.bg_image--8 {
-  background-image: url("/public/img/b1.png");
-}
-.maintitle {
-  color: white;
-}
-@media only screen and (max-width: 479px) {
-  .main-slider-style-7 {
-    background-position: left;
+.f {
+    left: 0;
+    margin: 0;
+    max-height: 1px;
+    max-width: 1px;
+    opacity: 0;
+    outline: none;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    z-index: -1;
   }
-}
-
-@media only screen and (min-width: 1024px) {
-  .axil-mobile-toggle .menu-btn i {
-    display: none;
-  }
-}
-
-.aboutbox {
-  background: #fff2df;
-  padding: 30px;
-  border-left: 5px solid #9a6210;
-  border-radius: 10px;
-}
-#bars-loading {
-  display: block;
-}
-.wa-chat-box-poweredby {
-  display: none;
-}

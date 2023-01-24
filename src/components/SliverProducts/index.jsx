@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { careerHndlerData } from "../../service/auth.service";
-import { listBody } from "../../utils/helper";
+import { sliverproductsHndlerData } from "../../service/auth.service";
+import { listBody, IMGURL } from "../../utils/helper";
 import Navbar from "../Navbar";
 
-export default function Career() {
+export default function Sliverproducts() {
   const navigate = useNavigate();
 
   const [categoriesData, setcategoriesData] = useState([]);
   useEffect(() => {
-    getcareerData();
+    getproductsData();
   }, []);
-  const getcareerData = async () => {
-    const response = await careerHndlerData(listBody({ perPage: 1000 }));
+  const getproductsData = async () => {
+    const response = await sliverproductsHndlerData(
+      listBody({ perPage: 1000 })
+    );
     if (response) {
       setcategoriesData(response);
     }
@@ -39,7 +41,7 @@ export default function Career() {
                 <span className="app-brand-text demo menu-text fw-bolder ms-2"></span>
               </Link>
               <a
-                
+                // 
                 className="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none"
               >
                 <i className="bx bx-chevron-left bx-sm align-middle" />
@@ -54,7 +56,7 @@ export default function Career() {
                   <div data-i18n="Analytics">Dashboard</div>
                 </Link>
               </li>
-              <li className="menu-item">
+              <li className="menu-item ">
                 <Link to="/golden" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-category" />
                   <div data-i18n="Analytics">Golden Collection</div>
@@ -73,19 +75,19 @@ export default function Career() {
                   <div data-i18n="Analytics">Golden Products</div>
                 </Link>
               </li>
-              <li className="menu-item ">
+              <li className="menu-item active">
                 <Link to="/sliverproducts" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-category-alt" />
                   <div data-i18n="Analytics">Sliver Products</div>
                 </Link>
               </li>
-              <li className="menu-item  ">
+              <li className="menu-item ">
                 <Link to="/banner" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-windows" />
                   <div data-i18n="Analytics">Web Banner</div>
                 </Link>
               </li>
-              <li className="menu-item active ">
+              <li className="menu-item ">
                 <Link to="/career" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-medal" />
                   <div data-i18n="Analytics">Career </div>
@@ -97,7 +99,6 @@ export default function Career() {
                   <div data-i18n="Analytics">Contact</div>
                 </Link>
               </li>
-             
             </ul>
           </aside>
           {/* / Menu */}
@@ -123,34 +124,29 @@ export default function Career() {
                     classname="topName"
                     style={{ fontSize: "x-large", fontWeight: "600" }}
                   >
-                    Career
+                    Sliver Collection Products
                   </span>
 
                   <button
                     type="button"
                     class="btn btn-primary"
-                    onClick={() => navigate("/career/add")}
+                    onClick={() => navigate("/sliverproducts/add")}
                   >
-                    Add Career
+                    Add Sliver Products
                   </button>
                 </div>
-
                 {categoriesData.length > 0 ? (
                   <div className="card">
-                    <h5 className="card-header">Career List</h5>
+                    <h5 className="card-header">Sliver Products List</h5>
                     <div className="table-responsive text-nowrap">
                       <table className="table table-hover">
                         <thead>
                           <tr>
                             <th>No</th>
-                            <th>Post</th>
-                            <th>Job Location</th>
-                            <th>Department</th>
-                            <th>Gender</th>
-                            <th>Experience</th>
-                            <th>Training</th>
-                            <th>Salary</th>
-                            <th>otherBenefits</th>
+                            <th>Products</th>
+                            <th>Products Description</th>
+                            <th>Products Images</th>
+                            <th>Sliver Category</th>
                             <th>Status</th>
                             <th>Edit</th>
                           </tr>
@@ -162,15 +158,20 @@ export default function Career() {
                                 <td>
                                   <strong>{index + 1}</strong>
                                 </td>
-                                <td>{card.post}</td>
-                                <td>{card.jobLocation}</td>
-                                <td>{card.department}</td>
-                                <td>{card.gender}</td>
-                                <td>{card.experience}</td>
-                                <td>{card.training}</td>
-                                <td>{card.salary}</td>
-                                <td>{card.otherBenefits}</td>
-
+                                <td>{card.productName}</td>
+                                <td>{card.productDescription}</td>
+                                <td>
+                                  <img
+                                    src={IMGURL + card.productImg}
+                                    alt=""
+                                    style={{
+                                      width: "24px",
+                                      borderRadius: "5px",
+                                      height: "24px",
+                                    }}
+                                  />
+                                </td>
+                                <td>{card.categoryId[0]?.sliverName}</td>
                                 <td>
                                   {card.isActive === "true" ? (
                                     <span className="badge bg-label-primary me-1">
@@ -183,7 +184,9 @@ export default function Career() {
                                   )}
                                 </td>
                                 <td>
-                                  <Link to={`/career/edit?cid=${card._id}`}>
+                                  <Link
+                                    to={`/sliverproducts/edit?cid=${card._id}`}
+                                  >
                                     <i
                                       className="bx bx-edit-alt "
                                       style={{

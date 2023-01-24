@@ -1,22 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { careerHndlerData } from "../../service/auth.service";
-import { listBody } from "../../utils/helper";
+import { addcareerHandler } from "../../service/auth.service";
+import { validName } from "../../utils/helper";
+import toast from "react-hot-toast";
 import Navbar from "../Navbar";
 
-export default function Career() {
+export default function Addcareer() {
   const navigate = useNavigate();
+  const [post, setpost] = useState(" ");
+  const [jobLocation, setjobLocation] = useState(" ");
+  const [department, setdepartment] = useState(" ");
+  const [gender, setgender] = useState(" ");
+  const [experience, setexperience] = useState(" ");
+  const [training, settraining] = useState(" ");
+  const [salary, setsalary] = useState(" ");
+  const [otherBenefits, setotherBenefits] = useState(" ");
+  const [selected, setSelected] = useState(false);
+  const successnotify = (msg) =>
+    toast.success(msg, { duration: 4000, id: msg });
+  const errornotify = (msg) => toast.error(msg, { duration: 4000, id: msg });
+  const validation = () => {
+    let formIsValid = true;
 
-  const [categoriesData, setcategoriesData] = useState([]);
-  useEffect(() => {
-    getcareerData();
-  }, []);
-  const getcareerData = async () => {
-    const response = await careerHndlerData(listBody({ perPage: 1000 }));
-    if (response) {
-      setcategoriesData(response);
+    return formIsValid;
+  };
+  const handleSubmit = (e) => {
+    if (validation() !== true) {
+    } else {
+      postData(e);
+      setSelected(true);
+    }
+    e.preventDefault();
+  };
+  const postData = async (event) => {
+    event.preventDefault();
+    const body = {
+      post,
+      jobLocation,
+      department,
+      gender,
+      experience,
+      training,
+      salary,
+      otherBenefits,
+    };
+    const response = await addcareerHandler(body);
+    if (response.success) {
+      setSelected(false);
+      navigate("/career");
+      successnotify(response.message);
+      setSelected(false);
+    } else {
+      errornotify(response.message);
+      setSelected(false);
     }
   };
+
   return (
     <div>
       <div className="layout-wrapper layout-content-navbar  ">
@@ -97,7 +136,6 @@ export default function Career() {
                   <div data-i18n="Analytics">Contact</div>
                 </Link>
               </li>
-             
             </ul>
           </aside>
           {/* / Menu */}
@@ -123,98 +161,183 @@ export default function Career() {
                     classname="topName"
                     style={{ fontSize: "x-large", fontWeight: "600" }}
                   >
-                    Career
-                  </span>
-
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    onClick={() => navigate("/career/add")}
-                  >
                     Add Career
-                  </button>
+                  </span>
                 </div>
+                <div className="row">
+                  <div className="col-xl">
+                    <div className="card mb-4">
+                      <div className="card-header d-flex justify-content-between align-items-center">
+                        <h5 className="mb-0">Add New Career</h5>
+                        <small className="text-muted float-end">
+                          Add Career Infomation
+                        </small>
+                      </div>
+                      <div className="card-body">
+                        <form
+                          onSubmit={(e) => {
+                            handleSubmit(e);
+                          }}
+                          method="post"
+                        >
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              Post
+                            </label>
+                            <input
+                              type="text"
+                              id="careerName"
+                              name="careerName"
+                              className="form-control"
+                              placeholder="Enter Career Name"
+                              onChange={(e) => [setpost(e.target.value)]}
+                            />
+                          </div>
 
-                {categoriesData.length > 0 ? (
-                  <div className="card">
-                    <h5 className="card-header">Career List</h5>
-                    <div className="table-responsive text-nowrap">
-                      <table className="table table-hover">
-                        <thead>
-                          <tr>
-                            <th>No</th>
-                            <th>Post</th>
-                            <th>Job Location</th>
-                            <th>Department</th>
-                            <th>Gender</th>
-                            <th>Experience</th>
-                            <th>Training</th>
-                            <th>Salary</th>
-                            <th>otherBenefits</th>
-                            <th>Status</th>
-                            <th>Edit</th>
-                          </tr>
-                        </thead>
-                        <tbody className="table-border-bottom-0">
-                          {categoriesData?.map((card, index) => {
-                            return (
-                              <tr>
-                                <td>
-                                  <strong>{index + 1}</strong>
-                                </td>
-                                <td>{card.post}</td>
-                                <td>{card.jobLocation}</td>
-                                <td>{card.department}</td>
-                                <td>{card.gender}</td>
-                                <td>{card.experience}</td>
-                                <td>{card.training}</td>
-                                <td>{card.salary}</td>
-                                <td>{card.otherBenefits}</td>
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              Job Location
+                            </label>
+                            <input
+                              type="text"
+                              id="jobLocation"
+                              name="jobLocation"
+                              className="form-control"
+                              placeholder="Enter Career Name"
+                              onChange={(e) => [setjobLocation(e.target.value)]}
+                            />
+                          </div>
 
-                                <td>
-                                  {card.isActive === "true" ? (
-                                    <span className="badge bg-label-primary me-1">
-                                      Active
-                                    </span>
-                                  ) : (
-                                    <span className="badge bg-label-danger me-1">
-                                      Disable
-                                    </span>
-                                  )}
-                                </td>
-                                <td>
-                                  <Link to={`/career/edit?cid=${card._id}`}>
-                                    <i
-                                      className="bx bx-edit-alt "
-                                      style={{
-                                        fontSize: "20px",
-                                        cursor: "pointer",
-                                      }}
-                                    />
-                                  </Link>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              Department
+                            </label>
+                            <input
+                              type="text"
+                              id="department"
+                              name="department"
+                              className="form-control"
+                              placeholder="Enter Career Name"
+                              onChange={(e) => [setdepartment(e.target.value)]}
+                            />
+                          </div>
+
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              Gender
+                            </label>
+                            <input
+                              type="text"
+                              id="gender"
+                              name="gender"
+                              className="form-control"
+                              placeholder="Enter Career Name"
+                              onChange={(e) => [setgender(e.target.value)]}
+                            />
+                          </div>
+
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              experience
+                            </label>
+                            <input
+                              type="text"
+                              id="experience"
+                              name="experience"
+                              className="form-control"
+                              placeholder="Enter Career Name"
+                              onChange={(e) => [setexperience(e.target.value)]}
+                            />
+                          </div>
+
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              training
+                            </label>
+                            <input
+                              type="text"
+                              id="training"
+                              name="training"
+                              className="form-control"
+                              placeholder="Enter Career Name"
+                              onChange={(e) => [settraining(e.target.value)]}
+                            />
+                          </div>
+
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              salary
+                            </label>
+                            <input
+                              type="text"
+                              id="salary"
+                              name="salary"
+                              className="form-control"
+                              placeholder="Enter Career Name"
+                              onChange={(e) => [setsalary(e.target.value)]}
+                            />
+                          </div>
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="basic-default-fullname"
+                            >
+                              otherBenefits
+                            </label>
+                            <input
+                              type="text"
+                              id="otherBenefits"
+                              name="otherBenefits"
+                              className="form-control"
+                              placeholder="Enter Career Name"
+                              onChange={(e) => [
+                                setotherBenefits(e.target.value),
+                              ]}
+                            />
+                          </div>
+
+                          <button type="submit" className="btn btn-primary">
+                            {selected ? "Loading..." : "Add Career "}
+                          </button>
+                          <button
+                            type="submit"
+                            className="btn btn-primary"
+                            style={{
+                              marginLeft: "12px",
+                            }}
+                            onClick={() => navigate("/career")}
+                          >
+                            Back
+                          </button>
+                        </form>
+                      </div>
                     </div>
                   </div>
-                ) : (
-                  <div
-                    class="spinner-border spinner-border-lg text-primary"
-                    role="status"
-                    style={{
-                      marginLeft: "45%",
-                      marginRight: "45%",
-                      marginTop: "20%",
-                    }}
-                  >
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                )}
+                </div>
               </div>
               {/* / Content */}
+
               {/* Footer */}
               <footer className="content-footer footer bg-footer-theme">
                 <div className="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">

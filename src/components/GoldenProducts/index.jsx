@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { careerHndlerData } from "../../service/auth.service";
-import { listBody } from "../../utils/helper";
+import { productsHndlerData } from "../../service/auth.service";
+import { IMGURL, listBody, URL } from "../../utils/helper";
 import Navbar from "../Navbar";
 
-export default function Career() {
+export default function Goldenproducts() {
   const navigate = useNavigate();
 
   const [categoriesData, setcategoriesData] = useState([]);
   useEffect(() => {
-    getcareerData();
+    getproductsData();
   }, []);
-  const getcareerData = async () => {
-    const response = await careerHndlerData(listBody({ perPage: 1000 }));
+  const getproductsData = async () => {
+    const response = await productsHndlerData(listBody({ perPage: 1000 }));
     if (response) {
       setcategoriesData(response);
     }
@@ -54,7 +54,7 @@ export default function Career() {
                   <div data-i18n="Analytics">Dashboard</div>
                 </Link>
               </li>
-              <li className="menu-item">
+              <li className="menu-item ">
                 <Link to="/golden" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-category" />
                   <div data-i18n="Analytics">Golden Collection</div>
@@ -67,7 +67,7 @@ export default function Career() {
                 </Link>
               </li>
 
-              <li className="menu-item ">
+              <li className="menu-item active">
                 <Link to="/goldenproducts" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-category-alt" />
                   <div data-i18n="Analytics">Golden Products</div>
@@ -79,13 +79,13 @@ export default function Career() {
                   <div data-i18n="Analytics">Sliver Products</div>
                 </Link>
               </li>
-              <li className="menu-item  ">
+              <li className="menu-item ">
                 <Link to="/banner" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-windows" />
                   <div data-i18n="Analytics">Web Banner</div>
                 </Link>
               </li>
-              <li className="menu-item active ">
+              <li className="menu-item ">
                 <Link to="/career" className="menu-link">
                   <i className="menu-icon tf-icons bx bx-medal" />
                   <div data-i18n="Analytics">Career </div>
@@ -97,7 +97,6 @@ export default function Career() {
                   <div data-i18n="Analytics">Contact</div>
                 </Link>
               </li>
-             
             </ul>
           </aside>
           {/* / Menu */}
@@ -123,54 +122,55 @@ export default function Career() {
                     classname="topName"
                     style={{ fontSize: "x-large", fontWeight: "600" }}
                   >
-                    Career
+                    Golden Collection Products
                   </span>
 
                   <button
                     type="button"
                     class="btn btn-primary"
-                    onClick={() => navigate("/career/add")}
+                    onClick={() => navigate("/goldenproducts/add")}
                   >
-                    Add Career
+                    Add Golden Products
                   </button>
                 </div>
-
                 {categoriesData.length > 0 ? (
                   <div className="card">
-                    <h5 className="card-header">Career List</h5>
+                    <h5 className="card-header">Products List</h5>
                     <div className="table-responsive text-nowrap">
                       <table className="table table-hover">
                         <thead>
                           <tr>
                             <th>No</th>
-                            <th>Post</th>
-                            <th>Job Location</th>
-                            <th>Department</th>
-                            <th>Gender</th>
-                            <th>Experience</th>
-                            <th>Training</th>
-                            <th>Salary</th>
-                            <th>otherBenefits</th>
+                            <th>Products</th>
+                            <th>Products Description</th>
+                            <th>Products Images</th>
+                            <th>Golden Category</th>
                             <th>Status</th>
                             <th>Edit</th>
                           </tr>
                         </thead>
                         <tbody className="table-border-bottom-0">
                           {categoriesData?.map((card, index) => {
+                      
                             return (
                               <tr>
                                 <td>
                                   <strong>{index + 1}</strong>
                                 </td>
-                                <td>{card.post}</td>
-                                <td>{card.jobLocation}</td>
-                                <td>{card.department}</td>
-                                <td>{card.gender}</td>
-                                <td>{card.experience}</td>
-                                <td>{card.training}</td>
-                                <td>{card.salary}</td>
-                                <td>{card.otherBenefits}</td>
-
+                                <td>{card.goldenproductName}</td>
+                                <td>{card.goldenproductDescription}</td>
+                                <td>
+                                  <img
+                                    src={IMGURL + card.goldenproductImg}
+                                    alt=""
+                                    style={{
+                                      width: "24px",
+                                      borderRadius: "5px",
+                                      height: "24px",
+                                    }}
+                                  />
+                                </td>
+                                <td>{card.categoryId[0]?.goldenName}</td>
                                 <td>
                                   {card.isActive === "true" ? (
                                     <span className="badge bg-label-primary me-1">
@@ -183,7 +183,9 @@ export default function Career() {
                                   )}
                                 </td>
                                 <td>
-                                  <Link to={`/career/edit?cid=${card._id}`}>
+                                  <Link
+                                    to={`/goldenproducts/edit?cid=${card._id}`}
+                                  >
                                     <i
                                       className="bx bx-edit-alt "
                                       style={{

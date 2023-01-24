@@ -1,0 +1,13 @@
+.authentication-inner{
+    margin-left: 35%;
+    margin-right: 35%;
+    margin-top: 5%;
+}
+
+@media screen and (max-width: 768px) {
+    .authentication-inner{
+        margin-left: 0%;
+        margin-right: 0%;
+        margin-top: 0%;
+    }
+  }
