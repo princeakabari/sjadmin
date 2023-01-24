@@ -22,7 +22,7 @@ import Editgoldenproducts from "./components/GoldenProducts/Editgoldenproducts";
 import Sliverproducts from "./components/SliverProducts";
 import Editsliverproducts from "./components/SliverProducts/Editsliverproducts";
 import Addsliverproducts from "./components/SliverProducts/Addsliverproducts";
-import Contact from "./components/Contact";
+import Contact from "./components/Contact/index";
 export default function App() {
   return (
     <>
