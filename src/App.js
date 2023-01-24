@@ -5,7 +5,6 @@ import Login from "./components/login";
 import { Helmet } from "react-helmet";
 import ProtectedRoute from "./protectedRoutes";
 import Sliver from "./components/Sliver";
-
 import Banner from "./components/Banner";
 import Addsliver from "./components/Sliver/Addsliver";
 import Editsliver from "./components/Sliver/Editsliver";
